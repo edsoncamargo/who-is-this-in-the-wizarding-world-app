@@ -1,0 +1,32 @@
+{
+  "name": "quiz-chp-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npx tsx ./src/Server.ts",
+    "generate:data": "py ./scripts/ws.py"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/cors": "8.2.1",
+    "@fastify/swagger": "8.5.1",
+    "@fastify/swagger-ui": "1.8.1",
+    "@prisma/client": "4.14.1",
+    "aws-sdk": "2.1382.0",
+    "axios": "1.4.0",
+    "dotenv": "16.0.3",
+    "fastify": "4.17.0",
+    "fastify-multer": "2.0.3",
+    "zod": "3.21.4"
+  },
+  "devDependencies": {
+    "@types/node": "20.2.3",
+    "nodemon": "2.0.22",
+    "prisma": "4.14.1",
+    "ts-node": "10.9.1",
+    "typescript": "5.0.4"
+  }
+}
