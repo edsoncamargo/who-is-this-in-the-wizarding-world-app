@@ -20,9 +20,9 @@ import {
 
 import { Satisfy_400Regular } from "@expo-google-fonts/satisfy";
 
-import Loading from "../components/loading";
 import { ImageBackground, StyleSheet } from "react-native";
 import { View } from "react-native";
+import Loading from "@/components/loading";
 
 export default function Layout() {
   let [fontsLoaded] = useFonts({
@@ -42,7 +42,11 @@ export default function Layout() {
   });
 
   if (Boolean(fontsLoaded) === false) {
-    return <Loading />;
+    return (
+      <View className="flex-1 items-center justify-center bg-tertiary">
+        <Loading />
+      </View>
+    );
   }
 
   return (
@@ -50,41 +54,16 @@ export default function Layout() {
       <ImageBackground
         source={{ uri: "https://i.ibb.co/dfbb3GB/Sem-t-tulo-1.png" }}
         resizeMode="cover"
-        style={{
-          height: "100%",
-          width: "100%",
-          position: "absolute",
-          left: 0,
-          top: 0,
-        }}
-        className="bg-tertiary"
+        className="absolute left-0 top-0 h-full w-full bg-tertiary"
       ></ImageBackground>
 
-      <SafeAreaView className="h-full flex-1 items-center justify-center pt-6 pb-10">
+      <SafeAreaView className="h-full flex-1 items-center justify-center pt-6">
         <StatusBar style="light" backgroundColor="transparent" translucent />
 
         <>
-          <Slot />
+          <Slot screenOptions={{ animation: "fade", animationEnabled: true }} />
         </>
       </SafeAreaView>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  image: {
-    flex: 1,
-    justifyContent: "center",
-  },
-  text: {
-    color: "white",
-    fontSize: 42,
-    lineHeight: 84,
-    fontWeight: "bold",
-    textAlign: "center",
-    backgroundColor: "#000000c0",
-  },
-});

@@ -1,0 +1,15 @@
+export const fontFamily = {
+  thin: "Roboto_100Thin",
+  "thin-italic": "Roboto_100Thin_Italic",
+  light: "Roboto_300Light",
+  "light-italic": "Roboto_300Light_Italic",
+  regular: "Roboto_400Regular",
+  "regular-italic": "Roboto_400Regular_Italic",
+  medium: "Roboto_500Medium",
+  "medium-italic": "Roboto_500Medium_Italic",
+  bold: "Roboto_700Bold",
+  "bold-italic": "Roboto_700Bold_Italic",
+  black: "Roboto_900Black",
+  "black-italic": "Roboto_900Black_Italic",
+  handwriting: "Satisfy_400Regular",
+};

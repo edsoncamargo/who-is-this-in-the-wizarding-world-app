@@ -2,6 +2,7 @@ import { ScrollView, Text, View } from "react-native";
 import Header from "../../components/header";
 import { Accordion } from "../../components/accordion";
 import { useState } from "react";
+import { MotiView } from "moti";
 
 export default function HowToPlay() {
   const accordions = [
@@ -156,13 +157,19 @@ export default function HowToPlay() {
 
       <ScrollView showsVerticalScrollIndicator={false}>
         {accordions.map((accordion, index) => (
-          <Accordion
+          <MotiView
             key={index}
-            title={accordion.title}
-            content={accordion.content}
-            isOpen={index === openAccordionIndex}
-            onPress={() => handleAccordionPress(index)}
-          />
+            from={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ type: "spring", delay: index * 50 }}
+          >
+            <Accordion
+              title={accordion.title}
+              content={accordion.content}
+              isOpen={index === openAccordionIndex}
+              onPress={() => handleAccordionPress(index)}
+            />
+          </MotiView>
         ))}
       </ScrollView>
     </View>

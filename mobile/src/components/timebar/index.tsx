@@ -1,4 +1,4 @@
-import { View, StyleSheet, Text } from "react-native";
+import { View, Text } from "react-native";
 import {
   forwardRef,
   useEffect,
@@ -8,15 +8,16 @@ import {
 } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { Feather } from "@expo/vector-icons";
+import { MotiView } from "moti";
 
-interface TimerBarProps {
+interface TimebarProps {
   initialTimerValue?: number;
   handleEndTimer: () => void;
   onPause?: () => void;
   onRestart?: () => void;
 }
 
-export const TimerBar = forwardRef((props: TimerBarProps, ref: any) => {
+export const Timerbar = forwardRef((props: TimebarProps, ref: any) => {
   const { initialTimerValue = 10, handleEndTimer } = props;
   const [timer, setTimer] = useState<number>(initialTimerValue);
   const [isPaused, setIsPaused] = useState(false);
@@ -58,38 +59,29 @@ export const TimerBar = forwardRef((props: TimerBarProps, ref: any) => {
     handleRestart,
   }));
 
-  function getCurrentTimerPercentage() {
+  function getCurrentTimerPercentage(): `${number}%` {
     return `${(timer / 10) * 100}%`;
   }
 
   return (
-    <View className="w-auto">
+    <MotiView from={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-auto">
       <LinearGradient
         colors={["#2D6EFC", "#222455"]}
-        className="relative mb-3 h-[48] w-full flex-row items-center justify-center"
-        style={styles.timerBar}
+        className="relative mb-3 h-[48] w-full flex-row items-center justify-center overflow-hidden rounded-full border-2 border-solid border-neutral-1"
         start={[0, 0]}
         end={[1, 0]}
       >
-        <View
+        <MotiView
           className={`absolute right-0 h-[48] w-full bg-tertiary`}
-          style={{ width: getCurrentTimerPercentage() }}
-        ></View>
+          from={{ width: getCurrentTimerPercentage() }}
+          animate={{ width: getCurrentTimerPercentage() }}
+        ></MotiView>
         <Text className="text-bold text-xl text-neutral-1">{timer}</Text>
 
         <View className="absolute right-3">
           <Feather name="clock" color="#F0F7F4" size={20} />
         </View>
       </LinearGradient>
-    </View>
+    </MotiView>
   );
-});
-
-const styles = StyleSheet.create({
-  timerBar: {
-    borderColor: "#F0F7F4",
-    borderWidth: 2,
-    borderRadius: 32,
-    overflow: "hidden",
-  },
 });

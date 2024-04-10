@@ -1,3 +1,4 @@
+import { MotiView } from "moti";
 import { ImageBackground, View } from "react-native";
 import { Shadow } from "react-native-shadow-2";
 
@@ -7,7 +8,12 @@ interface ImageQuiz {
 
 export function ImageQuiz({ url }: ImageQuiz) {
   return (
-    <View className="w-full flex-1 items-center">
+    <MotiView
+      className="w-full flex-1 items-center"
+      from={{ opacity: 0, translateY: -30 }}
+      animate={{ opacity: 1, translateY: 0 }}
+      transition={{ type: "spring", delay: 150 }}
+    >
       <Shadow
         style={{ borderRadius: 16 }}
         distance={6}
@@ -28,6 +34,6 @@ export function ImageQuiz({ url }: ImageQuiz) {
           />
         </View>
       </Shadow>
-    </View>
+    </MotiView>
   );
 }

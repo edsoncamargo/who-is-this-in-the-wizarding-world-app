@@ -1,6 +1,7 @@
 import { ReactNode, forwardRef, useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { Feather } from "@expo/vector-icons";
+import { MotiView, useDynamicAnimation } from "moti";
 
 interface Accordion {
   title: string;
@@ -30,19 +31,31 @@ export const Accordion = forwardRef(
           activeOpacity={0.7}
         >
           <Text className="text-xl font-bold text-primary">{title}</Text>
-          <Feather
-            name="chevron-down"
-            color="#9CB0DC"
-            size={24}
-            style={{ transform: [{ rotate: localOpen ? "180deg" : "0deg" }] }}
-          />
+          <MotiView
+            animate={{
+              rotate: localOpen ? "180deg" : "0deg",
+            }}
+            transition={{
+              type: "spring",
+            }}
+          >
+            <Feather name="chevron-down" color="#9CB0DC" size={24} />
+          </MotiView>
         </TouchableOpacity>
 
-        {localOpen && (
-          <View>
-            <Text className="text-xl text-primary">{content}</Text>
-          </View>
-        )}
+        <MotiView
+          from={{ opacity: 0, maxHeight: 0 }}
+          animate={{
+            opacity: localOpen ? 1 : 0,
+            maxHeight: localOpen ? 9999 : 0,
+          }}
+          transition={{
+            type: "timing",
+            duration: 1000,
+          }}
+        >
+          <Text className="text-xl text-primary">{content}</Text>
+        </MotiView>
       </View>
     );
   }

@@ -4,11 +4,12 @@ import { View, Text } from "react-native";
 import ChpService from "@/api/chp/chp.service";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { shuffleDeck } from "@/utils/shuffle-deck";
-import Loading from "@/components/loading";
 import { ImageQuiz } from "@/components/image-quiz";
-import { TimerBar } from "@/components/timebar";
-import Button from "@/components/button";
 import { WandLives } from "@/components/wand-lives";
+import Button from "@/components/button";
+import { Timerbar } from "@/components/timebar";
+import { MotiView } from "moti";
+import Loading from "@/components/loading";
 
 export default function Questions() {
   let { totalChars = 0 } = useLocalSearchParams<{
@@ -105,7 +106,7 @@ export default function Questions() {
 
   function renderTimerBar() {
     return (
-      <TimerBar
+      <Timerbar
         handleEndTimer={handleEndTimer}
         onRestart={handleEndTimer}
         ref={timerBarRef}
@@ -145,13 +146,19 @@ export default function Questions() {
   function renderButtons() {
     return answers.map(
       (answer: { isCorrect: boolean; name: string }, index) => (
-        <Button
+        <MotiView
           key={answer?.name + index}
-          name={answer?.name}
-          isCorrect={answer?.isCorrect}
-          handleOnPress={sendAwnser}
-          disabled={isGameOver() || isLoadingNextChar}
-        ></Button>
+          from={{ opacity: 0, translateY: -30 }}
+          animate={{ opacity: 1, translateY: 30 }}
+          transition={{ type: "spring", delay: 200 + index * 50 }}
+        >
+          <Button
+            name={answer?.name}
+            isCorrect={answer?.isCorrect}
+            handleOnPress={sendAwnser}
+            disabled={isGameOver() || isLoadingNextChar}
+          ></Button>
+        </MotiView>
       )
     );
   }
@@ -216,46 +223,95 @@ export default function Questions() {
     }
   }, [streakWands]);
 
-  if (isLoadingChars) return <Loading />;
+  if (isLoadingChars) return <LoadingCustom />;
 
   return (
     <View className="h-full w-full flex-1 flex-col items-center justify-between px-6">
       <View className="h-full w-full flex-1">
-        {renderTimerBar()}
+        <MotiView
+          from={{ opacity: 0, translateY: -30 }}
+          animate={{ opacity: 1, translateY: 30 }}
+          transition={{ type: "spring", delay: 0 }}
+        >
+          {renderTimerBar()}
+        </MotiView>
 
         <View className="relative flex flex-row justify-between">
           <View className="h-auto">
-            <Text className="mt-8 text-3xl font-bold text-primary">
-              <Text className="font-light">Character</Text>{" "}
-              {currentQuestion <= Number(totalChars)
-                ? currentQuestion
-                : Number(totalChars)}{" "}
-              of {totalChars}
-            </Text>
+            <MotiView
+              from={{ opacity: 0, translateY: -30 }}
+              animate={{ opacity: 1, translateY: 0 }}
+              transition={{ type: "spring", delay: 50 }}
+            >
+              <Text className="mt-8 text-3xl font-bold text-primary">
+                <Text className="font-light">Character</Text>{" "}
+                {currentQuestion <= Number(totalChars)
+                  ? currentQuestion
+                  : Number(totalChars)}{" "}
+                of {totalChars}
+              </Text>
+            </MotiView>
 
-            <WandLives wands={totalWands} ref={wandsRef} />
-          </View>
-
-          <View className="absolute right-0 bottom-0 mr-4 flex min-w-[60] -rotate-[30deg] flex-row items-center justify-center">
-            {streak >= 2 && streakWands !== maxStreakWands ? (
-              <>
-                <Text className="text-3xl font-bold text-highlight">
-                  {streak}
-                </Text>
-                <Text className="text-highlig text-xl text-highlight">x</Text>
-              </>
-            ) : (
-              streakWands === maxStreakWands && (
-                <Text className="text-highlig text-xl text-highlight">
-                  STREAaaAK! 🪄
-                </Text>
-              )
-            )}
+            <MotiView
+              from={{ opacity: 0, translateY: -30 }}
+              animate={{ opacity: 1, translateY: 0 }}
+              transition={{ type: "spring", delay: 100 }}
+            >
+              <WandLives wands={totalWands} ref={wandsRef} />
+            </MotiView>
           </View>
         </View>
       </View>
 
-      {renderImage()}
+      <MotiView
+        className="relative h-full w-full flex-1"
+        from={{ opacity: 0, translateY: -30 }}
+        animate={{ opacity: 1, translateY: 0 }}
+        transition={{ type: "spring", delay: 150 }}
+      >
+        <View className="relative z-10">
+          <MotiView
+            className="absolute -top-5 -right-16 h-7 w-full flex-1 flex-row items-center justify-center"
+            from={{ opacity: 0, translateY: 30, scale: 0, rotateZ: "90deg" }}
+            animate={{
+              opacity: streak >= 2 && streakWands !== maxStreakWands ? 1 : 0,
+              translateY:
+                streak >= 2 && streakWands !== maxStreakWands ? 1 : 30,
+              rotateZ:
+                streak >= 2 && streakWands !== maxStreakWands
+                  ? "0deg"
+                  : "90deg",
+              scale: streak >= 2 && streakWands !== maxStreakWands ? 1 : 0,
+            }}
+            transition={{ type: "spring" }}
+          >
+            <Text className="flex-1 text-center">
+              <Text className="text-3xl font-bold text-highlight">
+                {streak}
+              </Text>
+              <Text className=" text-xl text-highlight">x</Text>
+            </Text>
+          </MotiView>
+
+          <MotiView
+            className="absolute -top-5 -right-16 h-7 w-full flex-1 flex-row items-center justify-center"
+            from={{ opacity: 0, translateY: 30, scale: 0, rotateZ: "90deg" }}
+            animate={{
+              opacity: streakWands === maxStreakWands ? 1 : 0,
+              translateY: streakWands === maxStreakWands ? 1 : 30,
+              rotateZ: streakWands === maxStreakWands ? "0deg" : "90deg",
+              scale: streakWands === maxStreakWands ? 1.6 : 0,
+            }}
+            transition={{ type: "spring" }}
+          >
+            <Text className="text-center text-xl text-highlight">
+              STREAaaAK! 🪄
+            </Text>
+          </MotiView>
+        </View>
+
+        {renderImage()}
+      </MotiView>
 
       <View className="mt-10 flex-row flex-wrap justify-between">
         {renderButtons()}

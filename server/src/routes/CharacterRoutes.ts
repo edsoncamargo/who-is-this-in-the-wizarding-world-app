@@ -14,302 +14,340 @@ import { shuffle } from "../utils/ShuffleArray";
 import { CharacterShuffleResponse } from "../models/CharacterShuffleResponse";
 
 export async function charRoutes(server: FastifyInstance) {
-    const characterRepository = new CharacterRepository();
+  const characterRepository = new CharacterRepository();
 
-    server.post('/api/v1/security/character', async (req, reply) => {
-        const charScheme = z.object({
-            id: z.string().optional(),
-            name: z.string().trim(),
-            blood: z.string().trim().default("None"),
-            born: z.string().trim().default("None"),
-            species: z.string().trim().default("None"),
-            gender: z.string().trim().default("None"),
-            house: z.string().trim().default("None"),
-            url: z.string().url().trim()
-        });
-
-        let char = charScheme.parse(req.body) as ICharacter;
-
-        char = await characterRepository.add(char);
-
-        reply.code(Number(StatusCode.CREATED)).send(char);
+  server.post("/api/v1/security/character", async (req, reply) => {
+    const charScheme = z.object({
+      id: z.string().optional(),
+      name: z.string().trim(),
+      blood: z.string().trim().default("None"),
+      born: z.string().trim().default("None"),
+      species: z.string().trim().default("None"),
+      gender: z.string().trim().default("None"),
+      house: z.string().trim().default("None"),
+      url: z.string().url().trim(),
     });
 
-    server.post('/api/v1/security/characters', async (req, reply) => {
-        const serverReply: CharacterResponse = {
-            haveJustBeenAdded: [],
-            haveAlreadyBeenAdded: [],
-            haveNotAdded: [],
-            response: {
-                status: StatusCode['201'],
-                code: StatusCode.CREATED
-            }
-        };
+    let char = charScheme.parse(req.body) as ICharacter;
 
-        const characterScheme = z.object({
-            id: z.string().optional(),
-            name: z.string().trim(),
-            blood: z.string().trim().default("None"),
-            born: z.string().trim().default("None"),
-            species: z.string().trim().default("None"),
-            gender: z.string().trim().default("None"),
-            house: z.string().trim().default("None"),
-            url: z.string().url().trim()
-        });
+    char = await characterRepository.add(char);
 
-        const charsScheme = z.array(characterScheme);
+    reply.code(Number(StatusCode.CREATED)).send(char);
+  });
 
-        let chars = charsScheme.parse(req.body) as ICharacter[];
+  server.post("/api/v1/security/characters", async (req, reply) => {
+    const serverReply: CharacterResponse = {
+      haveJustBeenAdded: [],
+      haveAlreadyBeenAdded: [],
+      haveNotAdded: [],
+      response: {
+        status: StatusCode["201"],
+        code: StatusCode.CREATED,
+      },
+    };
 
-        for (const char of chars) {
-            try {
-                await characterRepository.add(char, serverReply);
-            } catch (error) {
-                serverReply.haveNotAdded.push(char);
-            }
-        }
-
-        serverReply.response.message = `Added ${serverReply.haveJustBeenAdded.length} new characters; They were not added because there were already ${serverReply.haveAlreadyBeenAdded.length} characters; ${serverReply.haveNotAdded.length} characters were not added for some unknown reason.`;
-        reply.code(Number(StatusCode.CREATED)).send(serverReply);
+    const characterScheme = z.object({
+      id: z.string().optional(),
+      name: z.string().trim(),
+      blood: z.string().trim().default("None"),
+      born: z.string().trim().default("None"),
+      species: z.string().trim().default("None"),
+      gender: z.string().trim().default("None"),
+      house: z.string().trim().default("None"),
+      url: z.string().url().trim(),
     });
 
-    server.get('/api/v1/security/characters/backup', async (_, reply) => {
-        const serverReply: any = {
-            chars: [],
-            qtd: 0,
-            response: {
-                status: StatusCode['202'],
-                code: StatusCode.ACCEPTED
-            }
-        };
+    const charsScheme = z.array(characterScheme);
 
-        const chars = await characterRepository.all();
-        serverReply.chars = chars;
-        serverReply.qtd = chars.length;
-        new BackupService(chars).backup();
-        reply.code(Number(StatusCode.ACCEPTED)).send(serverReply);
+    let chars = charsScheme.parse(req.body) as ICharacter[];
+
+    for (const char of chars) {
+      try {
+        await characterRepository.add(char, serverReply);
+      } catch (error) {
+        serverReply.haveNotAdded.push(char);
+      }
+    }
+
+    serverReply.response.message = `Added ${serverReply.haveJustBeenAdded.length} new characters; They were not added because there were already ${serverReply.haveAlreadyBeenAdded.length} characters; ${serverReply.haveNotAdded.length} characters were not added for some unknown reason.`;
+    reply.code(Number(StatusCode.CREATED)).send(serverReply);
+  });
+
+  server.get("/api/v1/security/characters/backup", async (_, reply) => {
+    const serverReply: any = {
+      chars: [],
+      qtd: 0,
+      response: {
+        status: StatusCode["202"],
+        code: StatusCode.ACCEPTED,
+      },
+    };
+
+    const chars = await characterRepository.all();
+    serverReply.chars = chars;
+    serverReply.qtd = chars.length;
+    new BackupService(chars).backup();
+    reply.code(Number(StatusCode.ACCEPTED)).send(serverReply);
+  });
+
+  server.get("/api/v1/character/:id", async (req, reply) => {
+    const paramsScheme = z.object({
+      id: z.string(),
     });
 
-    server.get('/api/v1/character/:id', async (req, reply) => {
-        const paramsScheme = z.object({
-            id: z.string()
-        });
+    let params = paramsScheme.parse(req.params);
 
-        let params = paramsScheme.parse(req.params);
+    const char = await characterRepository.findyById(params.id);
 
-        const char = await characterRepository.findyById(params.id);
+    if (char) {
+      reply.code(Number(StatusCode.OK)).send({
+        data: { char },
+        response: {
+          status: StatusCode["200"],
+          code: StatusCode.OK,
+        },
+      });
+      return;
+    }
 
-        if (char) {
-            reply.code(Number(StatusCode.OK)).send({
-                data: { char },
-                response: {
-                    status: StatusCode['200'],
-                    code: StatusCode.OK
-                }
-            });
-            return;
-        }
+    reply.code(Number(StatusCode.NOT_FOUND)).send({
+      char,
+      response: {
+        status: StatusCode["404"],
+        code: StatusCode.NOT_FOUND,
+      },
+    });
+  });
 
-        reply.code(Number(StatusCode.NOT_FOUND)).send({
-            char,
-            response: {
-                status: StatusCode['404'],
-                code: StatusCode.NOT_FOUND
-            }
-        });
+  server.get("/", async (req, reply) => {
+    reply.send("Server running...");
+  });
+
+  server.get(
+    "/api/v1/characters",
+    {
+      schema: {
+        summary:
+          "Gets all characters that are living beings with or without pagination",
+        querystring: {
+          take: {
+            type: "number",
+            description: "Number of characters per page",
+          },
+          currentPage: {
+            type: "number",
+            description: "Page number to return characters",
+          },
+        },
+      },
+    },
+    async (req, reply) => {
+      const serverReply: CharactersResponse = {
+        chars: [],
+        pagination: {},
+        response: {
+          status: StatusCode["200"],
+          code: StatusCode.OK,
+        },
+      };
+
+      const queryScheme = z.object({
+        take: z.coerce.number().optional(),
+        currentPage: z.coerce.number().optional(),
+      });
+
+      const query = queryScheme.parse(req.query);
+      const charsResponse = await characterRepository.list(query);
+
+      serverReply.chars = charsResponse.chars;
+
+      if (
+        query &&
+        query.take !== undefined &&
+        query.currentPage !== undefined
+      ) {
+        serverReply.pagination!.hasPagination = Boolean(query);
+        serverReply.pagination!.take = query.take;
+        serverReply.pagination!.currentPage = query.currentPage;
+        serverReply.pagination!.totalPages = charsResponse.totalPages;
+      }
+
+      reply.send(serverReply);
+    }
+  );
+
+  server.get(
+    "/api/v1/characters/shuffle",
+    {
+      schema: {
+        summary:
+          "Gets the amount of characters passed in the querystring limit in a shuffled way each time",
+        querystring: {
+          limit: {
+            type: "number",
+            description: "Number max of characters to get",
+          },
+        },
+      },
+    },
+    async (req, reply) => {
+      const serverReply: CharacterShuffleResponse = {
+        chars: [],
+        response: {
+          status: StatusCode["200"],
+          code: StatusCode.OK,
+        },
+      };
+
+      const queryScheme = z.object({
+        limit: z.coerce.number().optional(),
+      });
+
+      const chars = await characterRepository.listOnlyUrls();
+
+      if (chars.length <= 0) {
+        serverReply.response.status = StatusCode["204"];
+        serverReply.response.code = StatusCode.NOT_FOUND;
+        return reply.status(Number(StatusCode.NOT_FOUND)).send(serverReply);
+      }
+
+      const { limit = chars.length } = queryScheme.parse(req.query);
+      const shuffleChars = shuffle(chars);
+      serverReply.chars = shuffleChars.slice(0, limit);
+
+      reply.send(serverReply);
+    }
+  );
+
+  server.get("/api/v1/characters/urls", async (_, reply) => {
+    const charsUrls = await characterRepository.listOnlyUrls();
+    reply.send(charsUrls);
+  });
+
+  server.get("/api/v1/character/search/name/:name", async (req, reply) => {
+    const paramsScheme = z.object({
+      name: z.string(),
     });
 
-    server.get('/api/v1/characters', {
-        schema: {
-            summary: "Gets all characters that are living beings with or without pagination",
-            querystring: {
-                take: { type: 'number', description: "Number of characters per page" },
-                currentPage: { type: 'number', description: "Page number to return characters" }
-            },
-        }
-    }, async (req, reply) => {
-        const serverReply: CharactersResponse = {
-            chars: [],
-            pagination: {},
-            response: {
-                status: StatusCode['200'],
-                code: StatusCode.OK
-            }
-        };
+    let params = paramsScheme.parse(req.params);
 
-        const queryScheme = z.object({
-            take: z.coerce.number().optional(),
-            currentPage: z.coerce.number().optional(),
-        });
+    const char = await characterRepository.findyByName(params.name);
 
-        const query = queryScheme.parse(req.query)
-        const charsResponse = await characterRepository.list(query);
+    if (char) {
+      reply.code(Number(StatusCode.OK)).send({
+        data: { char },
+        response: {
+          status: StatusCode["200"],
+          code: StatusCode.OK,
+        },
+      });
+      return;
+    }
 
-        serverReply.chars = charsResponse.chars;
+    reply.code(Number(StatusCode.NOT_FOUND)).send({
+      char,
+      response: {
+        status: StatusCode["404"],
+        code: StatusCode.NOT_FOUND,
+      },
+    });
+  });
 
-        if (query && (query.take !== undefined) && (query.currentPage !== undefined)) {
-            serverReply.pagination!.hasPagination = Boolean(query);
-            serverReply.pagination!.take = query.take;
-            serverReply.pagination!.currentPage = query.currentPage;
-            serverReply.pagination!.totalPages = charsResponse.totalPages;
-        }
-
-        reply.send(serverReply);
+  server.get("/api/v1/character/search/house/:house", async (req, reply) => {
+    const paramsScheme = z.object({
+      house: z.enum([
+        Houses.GRYFFINDOR,
+        Houses.HUFFLEPUFF,
+        Houses.RAVENCLAW,
+        Houses.SLYTHERIN,
+        Houses.NONE,
+      ]),
     });
 
-    server.get('/api/v1/characters/shuffle', {
-        schema: {
-            summary: "Gets the amount of characters passed in the querystring limit in a shuffled way each time",
-            querystring: {
-                limit: { type: 'number', description: "Number max of characters to get" },
-            },
-        }
-    }, async (req, reply) => {
-        const serverReply: CharacterShuffleResponse = {
-            chars: [],
-            response: {
-                status: StatusCode['200'],
-                code: StatusCode.OK
-            }
-        };
+    let params = paramsScheme.parse(req.params);
 
-        const queryScheme = z.object({
-            limit: z.coerce.number().optional(),
-        });
+    const chars = await characterRepository.findyByHouse(params.house);
 
-        const chars = await characterRepository.listOnlyUrls();
+    if (chars) {
+      reply.code(Number(StatusCode.OK)).send({
+        data: { chars },
+        response: {
+          status: StatusCode["200"],
+          code: StatusCode.OK,
+        },
+      });
+      return;
+    }
 
-        if (chars.length <= 0) {
-            serverReply.response.status = StatusCode['204'];
-            serverReply.response.code = StatusCode.NOT_FOUND;
-            return reply.status(Number(StatusCode.NOT_FOUND)).send(serverReply);
-        }
+    reply.code(Number(StatusCode.NOT_FOUND)).send({
+      chars,
+      response: {
+        status: StatusCode["404"],
+        code: StatusCode.NOT_FOUND,
+      },
+    });
+  });
 
-        const { limit = chars.length } = queryScheme.parse(req.query)
-        const shuffleChars = shuffle(chars);
-        serverReply.chars = shuffleChars.slice(0, limit);
-
-        reply.send(serverReply);
+  server.get("/api/v1/character/search/gender/:gender", async (req, reply) => {
+    const paramsScheme = z.object({
+      gender: z.enum([Genders.FEMALE, Genders.MALE, Genders.NONE]),
     });
 
-    server.get('/api/v1/characters/urls', async (_, reply) => {
-        const charsUrls = await characterRepository.listOnlyUrls();
-        reply.send(charsUrls);
+    let params = paramsScheme.parse(req.params);
+
+    const chars = await characterRepository.findyByGender(params.gender);
+
+    if (chars) {
+      reply.code(Number(StatusCode.OK)).send({
+        data: { chars },
+        response: {
+          status: StatusCode["200"],
+          code: StatusCode.OK,
+        },
+      });
+      return;
+    }
+
+    reply.code(Number(StatusCode.NOT_FOUND)).send({
+      chars,
+      response: {
+        status: StatusCode["404"],
+        code: StatusCode.NOT_FOUND,
+      },
+    });
+  });
+
+  server.get("/api/v1/character/search/specie/:specie", async (req, reply) => {
+    const paramsScheme = z.object({
+      specie: z.enum([
+        Species.HUMAN,
+        Species.BOARHOUND,
+        Species.POLTERGEIST,
+        Species.NONE,
+      ]),
     });
 
-    server.get('/api/v1/character/search/name/:name', async (req, reply) => {
-        const paramsScheme = z.object({
-            name: z.string()
-        });
+    let params = paramsScheme.parse(req.params);
 
-        let params = paramsScheme.parse(req.params);
+    const chars = await characterRepository.findyBySpecie(params.specie);
 
-        const char = await characterRepository.findyByName(params.name);
+    if (chars) {
+      reply.code(Number(StatusCode.OK)).send({
+        data: { chars },
+        response: {
+          status: StatusCode["200"],
+          code: StatusCode.OK,
+        },
+      });
+      return;
+    }
 
-        if (char) {
-            reply.code(Number(StatusCode.OK)).send({
-                data: { char },
-                response: {
-                    status: StatusCode['200'],
-                    code: StatusCode.OK
-                }
-            });
-            return;
-        }
-
-        reply.code(Number(StatusCode.NOT_FOUND)).send({
-            char,
-            response: {
-                status: StatusCode['404'],
-                code: StatusCode.NOT_FOUND
-            }
-        });
+    reply.code(Number(StatusCode.NOT_FOUND)).send({
+      chars,
+      response: {
+        status: StatusCode["404"],
+        code: StatusCode.NOT_FOUND,
+      },
     });
-
-    server.get('/api/v1/character/search/house/:house', async (req, reply) => {
-        const paramsScheme = z.object({
-            house: z.enum([Houses.GRYFFINDOR, Houses.HUFFLEPUFF, Houses.RAVENCLAW, Houses.SLYTHERIN, Houses.NONE])
-        });
-
-        let params = paramsScheme.parse(req.params);
-
-        const chars = await characterRepository.findyByHouse(params.house);
-
-        if (chars) {
-            reply.code(Number(StatusCode.OK)).send({
-                data: { chars },
-                response: {
-                    status: StatusCode['200'],
-                    code: StatusCode.OK
-                }
-            });
-            return;
-        }
-
-        reply.code(Number(StatusCode.NOT_FOUND)).send({
-            chars,
-            response: {
-                status: StatusCode['404'],
-                code: StatusCode.NOT_FOUND
-            }
-        });
-    });
-
-    server.get('/api/v1/character/search/gender/:gender', async (req, reply) => {
-        const paramsScheme = z.object({
-            gender: z.enum([Genders.FEMALE, Genders.MALE, Genders.NONE])
-        });
-
-        let params = paramsScheme.parse(req.params);
-
-        const chars = await characterRepository.findyByGender(params.gender);
-
-        if (chars) {
-            reply.code(Number(StatusCode.OK)).send({
-                data: { chars },
-                response: {
-                    status: StatusCode['200'],
-                    code: StatusCode.OK
-                }
-            });
-            return;
-        }
-
-        reply.code(Number(StatusCode.NOT_FOUND)).send({
-            chars,
-            response: {
-                status: StatusCode['404'],
-                code: StatusCode.NOT_FOUND
-            }
-        });
-    });
-
-    server.get('/api/v1/character/search/specie/:specie', async (req, reply) => {
-        const paramsScheme = z.object({
-            specie: z.enum([Species.HUMAN, Species.BOARHOUND, Species.POLTERGEIST, Species.NONE])
-        });
-
-        let params = paramsScheme.parse(req.params);
-
-        const chars = await characterRepository.findyBySpecie(params.specie);
-
-        if (chars) {
-            reply.code(Number(StatusCode.OK)).send({
-                data: { chars },
-                response: {
-                    status: StatusCode['200'],
-                    code: StatusCode.OK
-                }
-            });
-            return;
-        }
-
-        reply.code(Number(StatusCode.NOT_FOUND)).send({
-            chars,
-            response: {
-                status: StatusCode['404'],
-                code: StatusCode.NOT_FOUND
-            }
-        });
-    });
+  });
 }

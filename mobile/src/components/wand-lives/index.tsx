@@ -1,3 +1,4 @@
+import { MotiView } from "moti";
 import { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -31,23 +32,23 @@ export const WandLives = forwardRef((props: WandLivesProps, ref: any) => {
   return (
     <View className="flex-row space-x-4">
       {new Array(wands).fill(null).map((_, index) => (
-        <Text
+        <MotiView
           key={`${index}-wand`}
-          className="text-xl"
-          style={index < broken ? styles.disable : null}
+          from={{ opacity: 0, translateY: -15 }}
+          animate={{
+            opacity: 1,
+            translateY: 0,
+          }}
+          transition={{ type: "spring", delay: 100 * index }}
         >
-          🪄
-        </Text>
+          <MotiView
+            className="text-xl"
+            animate={{ opacity: index < broken ? 0.5 : 1 }}
+          >
+            <Text className="transition-all">🪄</Text>
+          </MotiView>
+        </MotiView>
       ))}
     </View>
   );
-});
-
-const styles = StyleSheet.create({
-  disable: {
-    color: "transparent",
-    textShadowColor: "#9CB0DC",
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 1,
-  },
 });

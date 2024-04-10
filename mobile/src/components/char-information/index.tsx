@@ -22,8 +22,6 @@ const CharInformation: React.FC<CharInformationProps> = React.memo(
     house,
     url,
   }: CharInformationProps) => {
-    console.log(name);
-
     function houseToRender() {
       switch (house) {
         case "Gryffindor":
@@ -86,7 +84,7 @@ const CharInformation: React.FC<CharInformationProps> = React.memo(
             </Text>
           </View>
           <View className="absolute -right-24 -top-10 z-10 h-full w-full">
-            {/* {houseToRender()} */}
+            {houseToRender()}
           </View>
 
           <Text className="z-1 absolute -right-10 -bottom-10">

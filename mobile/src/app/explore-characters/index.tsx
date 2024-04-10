@@ -1,10 +1,11 @@
 import { View, FlatList, ListRenderItemInfo } from "react-native";
-import Header from "../../components/header";
 import { useEffect, useState } from "react";
 
 import ChpService, { Chars } from "../../api/chp/chp.service";
-import LoadingStatic from "../../components/loading-static";
-import CharInformation from "../../components/char-information";
+import Header from "@/components/header";
+import CharInformation from "@/components/char-information";
+import { MotiView } from "moti";
+import Loading from "@/components/loading";
 
 export default function ExploreCharacters() {
   const chpService = new ChpService();
@@ -14,12 +15,16 @@ export default function ExploreCharacters() {
   const [totalPages, setTotalPages] = useState<number>();
 
   async function getChars() {
-    const { data } = await chpService.getChars(10, page);
-    if (totalPages === undefined) setTotalPages(data.pagination.totalPages);
+    try {
+      const { data } = await chpService.getChars(10, page);
+      if (totalPages === undefined) setTotalPages(data.pagination.totalPages);
 
-    if (hasMoreChars()) {
-      setChars((prevChars) => [...(prevChars || []), ...data.chars]);
-      setPage((prevPage) => prevPage + 1);
+      if (hasMoreChars()) {
+        setChars((prevChars) => [...(prevChars || []), ...data.chars]);
+        setPage((prevPage) => prevPage + 1);
+      }
+    } catch (error) {
+      console.warn(error);
     }
   }
 
@@ -52,21 +57,27 @@ export default function ExploreCharacters() {
       <FlatList
         data={chars}
         renderItem={({ item }: ListRenderItemInfo<Chars>) => (
-          <CharInformation
-            id={item.id}
-            name={item.name}
-            blood={item.blood}
-            born={item.born}
-            species={item.species}
-            gender={item.gender}
-            house={item.house}
-            url={item.url}
-          />
+          <MotiView
+            from={{ opacity: 0, translateX: -30 }}
+            animate={{ opacity: 1, translateX: 0 }}
+            transition={{ type: "spring", delay: 100 }}
+          >
+            <CharInformation
+              id={item.id}
+              name={item.name}
+              blood={item.blood}
+              born={item.born}
+              species={item.species}
+              gender={item.gender}
+              house={item.house}
+              url={item.url}
+            />
+          </MotiView>
         )}
         keyExtractor={(item) => item.id}
         onEndReached={getChars}
         onEndReachedThreshold={0.1}
-        ListFooterComponent={hasMoreChars() ? <LoadingStatic /> : null}
+        ListFooterComponent={hasMoreChars() ? <Loading /> : null}
       />
     </View>
   );

@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import Header from "../../components/header";
+import { MotiView } from "moti";
 
 export default function Levels() {
   const router = useRouter();
@@ -42,18 +43,24 @@ export default function Levels() {
 
       <ScrollView className="gap-y-4" showsVerticalScrollIndicator={false}>
         {levels.map((level, index) => (
-          <TouchableOpacity
+          <MotiView
             key={index}
-            className="align-center max-h-[84] min-h-[84] items-center justify-center rounded-2xl border-2 border-secondary px-4 transition-all"
-            activeOpacity={0.7}
-            onPress={() =>
-              redirectTo("quiz/questions", { totalChars: level.n * 10 })
-            }
+            from={{ opacity: 0, translateY: -30 }}
+            animate={{ opacity: 1, translateY: 30 }}
+            transition={{ type: "spring", delay: index * 50 }}
           >
-            <Text className="color-primary text-center font-regular text-xl transition-all">
-              {level.name}
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              className="align-center max-h-[84] min-h-[84] items-center justify-center rounded-2xl border-2 border-secondary px-4 transition-all"
+              activeOpacity={0.7}
+              onPress={() =>
+                redirectTo("quiz/questions", { totalChars: level.n * 10 })
+              }
+            >
+              <Text className="color-primary text-center font-regular text-xl transition-all">
+                {level.name}
+              </Text>
+            </TouchableOpacity>
+          </MotiView>
         ))}
       </ScrollView>
     </View>
