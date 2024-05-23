@@ -80,8 +80,8 @@ To run the app locally, follow these steps:
 Clone the repository:
 
 ```bash
-git clone https://github.com/edsoncamargo/nlw-unite-pass-in-app
-cd your-path/nlw-unite-pass-in-app
+git clone git@github.com:edsoncamargo/quiz-chars-harry-potter-app.git
+cd your-path/quiz-chars-harry-potter-app
 ```
 
 Next, follow the steps below:
