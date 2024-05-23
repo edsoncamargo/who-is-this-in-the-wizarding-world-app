@@ -15,7 +15,7 @@ server.register(cors, {
 
 server.register(charRoutes);
 
-server.listen({ port: 3333, host: "0.0.0.0" }, (err, address) => {
+server.listen({ port: 3333, host: "192.168.1.121" }, (err, address) => {
   if (err) {
     console.error(err);
     process.exit(1);

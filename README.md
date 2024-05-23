@@ -61,17 +61,21 @@ Allows users to retrieve a QR code ticket using its corresponding code.
 
 ### Mobile
 
-#### Home (Get Ticket)
+#### Play Quiz
 
-![Home (Get Ticket)](./mobile/assets/screenshots/1.png)
+![Play Quiz ](./mobile/assets/gifs/1.gif)
 
-#### Create Ticket
+#### Explore Characters
 
-![Create Ticket](./mobile/assets/screenshots/2.png)
+![Create Ticket](./mobile/assets/gifs/2.gif)
 
-#### Show Ticket
+#### How to Play
 
-![Show Ticket](./mobile/assets/screenshots/3.png)
+![Show Ticket](./mobile/assets/gifs/3.gif)
+
+#### About
+
+![Show Ticket](./mobile/assets/gifs/4.gif)
 
 ## Installation
 
@@ -90,16 +94,16 @@ Next, follow the steps below:
 
 1. Install the dependencies:
 
-   ```bash
+```bash
    cd mobile
    npm install
-   ```
+```
 
 2. Start the web:
 
-   ```bash
+```bash
    npx expo start
-   ```
+```
 
 3. Scan the QR code using the Expo Go app on your mobile device or use an emulator to test the app.
 

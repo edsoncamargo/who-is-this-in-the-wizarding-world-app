@@ -12,7 +12,6 @@ class S3StorageService {
       this.client = new aws.S3({
         region: "sa-east-1",
       });
-      console.log(this.client, "entrei");
     } catch (error) {
       console.error("Erro ao criar cliente S3:", error);
     }

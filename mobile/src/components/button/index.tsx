@@ -1,11 +1,12 @@
 import { TouchableOpacity, View, Text, Dimensions } from "react-native";
 import clsx from "clsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface Button {
   name: string;
   isCorrect: boolean;
   disabled?: boolean;
+  hasPressed?: boolean;
   handleOnPress: (name: string, isCorrect: boolean) => void;
 }
 
@@ -13,12 +14,13 @@ export default function Button({
   name,
   isCorrect,
   disabled,
+  hasPressed = false,
   handleOnPress,
 }: Button) {
   const SCREEN_HORIZONTAL_PADDING = (24 * 2) / 2;
   const windowWidth = Dimensions.get("window").width;
   const answerButtonWidth = windowWidth / 2 - (SCREEN_HORIZONTAL_PADDING + 4);
-  let [pressed, setPressed] = useState<boolean>(false);
+  let [pressed, setPressed] = useState<boolean>(hasPressed);
 
   function getIsCorrect() {
     handleOnPress(name, isCorrect);

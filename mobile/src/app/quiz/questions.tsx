@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { View, Text } from "react-native";
+import { View, Text, Modal } from "react-native";
 
 import ChpService from "@/api/chp/chp.service";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -47,6 +47,8 @@ export default function Questions() {
   const [streakWands, setStreakWands] = useState<number>(0);
 
   function getCurrentChar(chars: Array<any>) {
+    setAnswers([]);
+
     if (chars && chars.length > 0 && currentQuestion <= Number(totalChars)) {
       let stop = false;
 
@@ -71,22 +73,30 @@ export default function Questions() {
   }
 
   function getAnswers(char: any, chars: Array<any>) {
-    let auxAnswers = [{ isCorrect: true, name: char.name }];
+    const maxAnswers = 4;
+    const correctChar = { isCorrect: true, name: char.name };
+    let newAnswerOptions = [correctChar];
 
-    while (auxAnswers.length < 4) {
+    while (newAnswerOptions.length < maxAnswers) {
       const charName =
         chars[Math.floor(Math.random() * Number(totalChars))].name;
-      const hasName = auxAnswers.some(
+
+      const hasName = newAnswerOptions.some(
         (answer: { isCorrect: boolean; name: string }) =>
           charName === answer.name
       );
 
-      if (hasName === false) {
-        auxAnswers.push({ isCorrect: false, name: charName });
+      const hasPreviousName = answers.some(
+        (answer: { isCorrect: boolean; name: string }) =>
+          charName === answer?.name
+      );
+
+      if (hasName === false && hasPreviousName === false) {
+        newAnswerOptions.push({ isCorrect: false, name: charName });
       }
     }
 
-    setAnswers(shuffleDeck(auxAnswers));
+    setAnswers(shuffleDeck(newAnswerOptions));
   }
 
   async function getShuffledChars() {
@@ -149,12 +159,13 @@ export default function Questions() {
         <MotiView
           key={answer?.name + index}
           from={{ opacity: 0, translateY: -30 }}
-          animate={{ opacity: 1, translateY: 30 }}
+          animate={{ opacity: 1, translateY: 0 }}
           transition={{ type: "spring", delay: 200 + index * 50 }}
         >
           <Button
             name={answer?.name}
             isCorrect={answer?.isCorrect}
+            hasPressed={false}
             handleOnPress={sendAwnser}
             disabled={isGameOver() || isLoadingNextChar}
           ></Button>
@@ -223,10 +234,10 @@ export default function Questions() {
     }
   }, [streakWands]);
 
-  if (isLoadingChars) return <LoadingCustom />;
+  if (isLoadingChars) return <Loading />;
 
   return (
-    <View className="h-full w-full flex-1 flex-col items-center justify-between px-6">
+    <View className=" relative h-full w-full flex-1 flex-col items-center justify-between px-6">
       <View className="h-full w-full flex-1">
         <MotiView
           from={{ opacity: 0, translateY: -30 }}
@@ -313,7 +324,7 @@ export default function Questions() {
         {renderImage()}
       </MotiView>
 
-      <View className="mt-10 flex-row flex-wrap justify-between">
+      <View className="mt-10 mb-10 flex-row flex-wrap justify-between">
         {renderButtons()}
       </View>
     </View>

@@ -1,7 +1,18 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Dimensions,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Entypo, MaterialIcons } from "@expo/vector-icons";
 import { MotiView } from "moti";
+import { captureScreen } from "react-native-view-shot";
+import { useEffect, useRef, useState } from "react";
+import * as ImageManipulator from "expo-image-manipulator";
+import * as Sharing from "expo-sharing";
 
 export default function Feedback() {
   const {
@@ -16,9 +27,65 @@ export default function Feedback() {
     wrong: string;
   }>();
   const router = useRouter();
+  const viewRef = useRef<any>(null);
+  const [bottomPosition, setBottomPosition] = useState(0);
+
+  const takeScreenShot = () => {
+    viewRef.current.measureInWindow(
+      (x: any, y: any, width: any, height: any) => {
+        const bottom = y + height;
+
+        setBottomPosition(bottom);
+      }
+    );
+
+    captureScreen({
+      format: "jpg",
+      quality: 0.8,
+    }).then(
+      async (uri) => {
+        try {
+          const { width, height } = await new Promise<any>(
+            (resolve, reject) => {
+              Image.getSize(
+                uri,
+                (width, height) => resolve({ width, height }),
+                reject
+              );
+            }
+          );
+
+          console.log(bottomPosition);
+
+          const croppedImage = await ImageManipulator.manipulateAsync(
+            uri,
+            [
+              {
+                crop: {
+                  originX: 0,
+                  originY: 0,
+                  width: width,
+                  height: height,
+                },
+              },
+            ],
+            { compress: 1, format: ImageManipulator.SaveFormat.PNG }
+          );
+
+          const message =
+            "Confira meu resultado do Quiz - Characters Harry Potter, desenvolvido por Edson Camargo.";
+          await Sharing.shareAsync(croppedImage.uri, { dialogTitle: message });
+        } catch (error) {
+          console.error("Ops, algo deu errado", error);
+        }
+      },
+      (error) => console.error("Ops, algo deu errado", error)
+    );
+  };
+
+  useEffect(() => {}, [bottomPosition]);
 
   function getCurrentPercentage(): `${number}%` {
-    console.log((Number(correct) / Number(totalChars)) * 100);
     return `${(Number(correct) / Number(totalChars)) * 100}%`;
   }
 
@@ -145,28 +212,28 @@ export default function Feedback() {
         </View>
       </View>
 
-      <View className="flex">
+      <View className="flex" ref={viewRef}>
         <MotiView
-          className="absolute -bottom-10 h-[108] w-full rounded-t-3xl bg-primary/50"
+          className="absolute top-2 z-10 h-[108] w-full rounded-t-3xl bg-secondary"
           from={{ opacity: 0, translateY: 200 }}
           animate={{ opacity: 1, translateY: 0 }}
           transition={{ type: "spring", delay: 350 }}
         ></MotiView>
         <MotiView
-          className="absolute -bottom-10 h-[100] w-full rounded-t-3xl bg-secondary"
+          className="absolute top-10 h-[100] w-full rounded-t-3xl bg-primary/50 "
           from={{ opacity: 0, translateY: 200 }}
           animate={{ opacity: 1, translateY: 0 }}
           transition={{ type: "spring", delay: 400 }}
         ></MotiView>
 
-        <View className="flex w-full flex-row justify-between px-6">
+        <View className="relative z-20 flex w-full flex-row justify-between px-6">
           <MotiView
             from={{ opacity: 0, translateY: 200 }}
             animate={{ opacity: 1, translateY: 0 }}
             transition={{ type: "spring", delay: 450 }}
           >
             <TouchableOpacity
-              className="flex flex-row items-center justify-center gap-2"
+              className="flex flex-row items-center justify-center gap-2 py-10"
               onPress={() => redirectTo("")}
             >
               <Text className="text-xl font-bold text-primary">Menu</Text>
@@ -180,7 +247,7 @@ export default function Feedback() {
             transition={{ type: "spring", delay: 500 }}
           >
             <TouchableOpacity
-              className="flex flex-row items-center justify-center gap-2"
+              className="flex flex-row items-center justify-center gap-2 py-10"
               onPress={() => redirectTo("quiz/questions")}
             >
               <Text className="text-xl font-bold text-primary">Again </Text>
@@ -193,7 +260,10 @@ export default function Feedback() {
             animate={{ opacity: 1, translateY: 0 }}
             transition={{ type: "spring", delay: 550 }}
           >
-            <TouchableOpacity className="flex flex-row items-center justify-center gap-2">
+            <TouchableOpacity
+              className="flex flex-row items-center justify-center gap-2 py-10"
+              onPress={() => takeScreenShot()}
+            >
               <Text className="text-xl font-bold text-primary">Share</Text>
               <Entypo name="share" color="#9CB0DC" size={20} />
             </TouchableOpacity>
