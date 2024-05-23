@@ -1,18 +1,16 @@
-# Pass-In
+# Who is this in The Wizarding World
 
-![Pass-In Logo](./mobile/assets/images/icon.png)
+![Who is this in The Wizarding World Logo](./mobile/assets/icon-wbg.png)
 
-**Pass-In** is an app designed to streamline participant management at in-person events by generating unique QR code tickets for each attendee. With an intuitive interface, EventQR allows organizers to scan QR codes to efficiently register participant attendance without hassle. This project was developed as part of a hands-on session during the NLW Unite (Rocketseat).
+**Who is this in The Wizarding World** is a React Native app quiz that challenges you to identify characters from the Harry Potter universe based on their photos. With four possible names to choose from, test your knowledge and see if you can correctly guess the character's name. Character data is collected through web scraping, and the app's database is self-maintained.
+
+## Status
+
+This project is ongoing and has not yet been completed. Some features may be incomplete or in the development phase.
 
 ## Credits
 
-This project was developed based on the knowledge acquired through courses and educational materials provided by [rocketseat](https://www.rocketseat.com.br). Rockseat offers a wide range of high-quality courses and content for developers in various areas, including design, programming, and app development.
-
-We would like to thank the Rockseat team for providing valuable educational resources that contributed to the development of this project.
-
-For more information about the courses and materials offered by Rockseat, please visit the official website at [rocketseat](https://www.rocketseat.com.br).
-
-🎨 [Figma do projeto](https://www.figma.com/community/file/1356738933008624188/pass-in)
+The data about Harry Potter characters was collected from the website **harrypotter.fandom**, available at [https://harrypotter.fandom.com/pt-br/wiki].
 
 ## Technology
 
@@ -24,12 +22,8 @@ The following are the key technologies and tools used in the development of this
 - **Expo**: It's an open-source platform and set of tools for building native mobile apps using JavaScript and React Native. Expo provides a range of ready-to-use components and APIs that streamline app development, including access to features like camera, geolocation, and push notifications.
 - **Nativewind**: NativeWind uses Tailwind CSS as scripting language to create a universal style system for React Native. NativeWind components can be shared between platforms and will output their styles as CSS StyleSheet on web and StyleSheet.create for native.
 - **Axios**: Is a simple promise based HTTP client for the browser and node.js. Axios provides a simple to use library in a small package with a very extensible interface.
-- **Zustand**: Is a minimalist state management library for React applications. It offers a simple and intuitive API for managing application state, with support for global state, local state, and derived state. Zustand emphasizes simplicity, performance, and ease of use.
-- **Async Storage**: Is a library for React Native that provides a simple asynchronous storage system for persisting key-value data in the app's local storage. It offers a straightforward API for storing, retrieving, and deleting data, making it easy to manage app state across sessions. Async Storage is commonly used for caching data, storing user preferences, and implementing offline functionality in mobile applications.
-- **Expo Image Picker**: Is a library that enables developers to easily add image selection functionality to their Expo projects. With this library, users can choose images from their device's gallery or take photos using the device's camera.
 - **Moti**: Is a declarative animations library for React Native that allows developers to create smooth and interactive animations with ease. It provides a simple API for defining animations using JavaScript syntax, making it straightforward to add motion to your app's UI elements.
 - **React Native Reanimated**: I s a powerful animation library for React Native that provides a low-level API for building complex and high-performance animations. It allows developers to create fluid and responsive animations by directly manipulating the native animation drivers on the UI thread.
-- **React Native QRCode Svg**: Is a library for generating QR codes in React Native applications using SVG (Scalable Vector Graphics). It allows developers to easily create QR codes from data strings and customize their appearance using SVG properties such as color, size, and style.
 
 ### Server
 
@@ -42,20 +36,23 @@ The following are the key technologies and tools used in the development of this
   - Prisma Studio: GUI to view and edit data in your database
 
 - **Zod**: Is a TypeScript-first schema declaration and validation library. I'm using the term "schema" to broadly refer to any data type, from a simple string to a complex nested object.
+- **aws-sdk**: The AWS SDK is a toolkit for integrating applications with Amazon Web Services. Specifically, using the S3 service allows scalable and secure storage of character images.
 
 ## How It Works
 
-### Create Ticket (QR Code):
+### How to Play:
 
-Allows users to generate a unique QR code ticket only if no credential has been created for that email address.
-
-### Remove Ticket (QR Code):
-
-Enables users to remove a QR code ticket from the system while retaining the ability to access it later.
-
-### Get Ticket (QR Code) by Code:
-
-Allows users to retrieve a QR code ticket using its corresponding code.
+- The objective of the game is to correctly guess the character shown in the photo.
+- Each round will present a random photo of a character from the Harry Potter universe, including humans, wizards, and creatures.
+- Four answer options will be displayed, each with the name of a related character. Only one of the options is the correct answer.
+- The player starts with three lives, represented by magical wands. Each incorrect answer or failure to respond within the time limit will result in the loss of a life.
+- A 10-second timer will be displayed for each question. If the time runs out before answering, a life will be lost.
+- The timer will reset for each new question.
+- The number of characters to be guessed is determined by the current level. The game starts at Level 1 with 10 characters and progresses to Level 10, where an additional 10 characters are added with each level.
+- There is no automatic level progression. The player wins the game by reaching the last question of the level without losing all three lives.
+- If the player answers 5 questions correctly in a row, a strike is made, recovering one life. However, the maximum number of lives is 3.
+- The game offers an "Explorer Characters" section where players can search and filter the characters for practice before playing the quiz.
+- At the end, there is a scoreboard displaying statistics from the previous game, including errors, correct answers, and lives lost.
 
 ## Screenshots
 
@@ -63,19 +60,19 @@ Allows users to retrieve a QR code ticket using its corresponding code.
 
 #### Play Quiz
 
-![Play Quiz ](./mobile/assets/gifs/1.gif)
+![Play Quiz](./mobile/assets/gifs/1.gif)
 
 #### Explore Characters
 
-![Create Ticket](./mobile/assets/gifs/2.gif)
+![Explore Characters](./mobile/assets/gifs/2.gif)
 
 #### How to Play
 
-![Show Ticket](./mobile/assets/gifs/3.gif)
+![How to Play](./mobile/assets/gifs/3.gif)
 
 #### About
 
-![Show Ticket](./mobile/assets/gifs/4.gif)
+![About](./mobile/assets/gifs/4.gif)
 
 ## Installation
 
@@ -84,8 +81,8 @@ To run the app locally, follow these steps:
 Clone the repository:
 
 ```bash
-git clone git@github.com:edsoncamargo/quiz-chars-harry-potter-app.git
-cd your-path/quiz-chars-harry-potter-app
+git clone git@github.com:edsoncamargo/who-is-this-in-the-wizarding-world-app.git
+cd your-path/who-is-this-in-the-wizarding-world-app
 ```
 
 Next, follow the steps below:
@@ -139,6 +136,6 @@ You are welcome to contribute to the development of this project. If you find bu
 
 ## Acknowledgments
 
-Special thanks to everyone who contributed to making this app a reality, especially Rocketseat for their invaluable support and guidance throughout the development process. Your expertise and dedication have been instrumental in bringing this project to fruition.
+Special thanks to everyone who contributed to making this app a reality, including my girlfriend Malu, and JK Rowling for creating the world of Harry Potter.
 
-Enjoy using **Pass-In!**
+Enjoy using **Who is this in The Wizarding World!**
