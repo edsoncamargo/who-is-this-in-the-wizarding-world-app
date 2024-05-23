@@ -54,7 +54,7 @@ The following are the key technologies and tools used in the development of this
 - The game offers an "Explorer Characters" section where players can search and filter the characters for practice before playing the quiz.
 - At the end, there is a scoreboard displaying statistics from the previous game, including errors, correct answers, and lives lost.
 
-## Screenshots
+## Demo
 
 ### Mobile
 
